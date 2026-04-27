@@ -15,28 +15,38 @@ params={
     "timezone": "Europe/Helsinki",
      "removeduplicate": 1
 }
-response = requests.get(url, params=params)
-data = response.json()
 
-#TRANSFORMING INCOMING STRUCTURE
+def get_news():
+    print("Gathering data...")
+    response = requests.get(url, params=params)
+    data = response.json()
 
-articles= data.get("results", [])
+    #TRANSFORMING INCOMING STRUCTURE
 
-if not articles:
-    print("No articles found, check API")
-else:
+    articles= data.get("results", [])
+
+    if not articles:
+        print("No articles found, check API")
+        return None
+    
     df=pd.DataFrame(articles)
     print(df.columns)
-desired_columns=['title', 'pubDate', 'source', 'country', 'category', 'description', 'link']
+    desired_columns=['title', 'pubDate', 'country', 'category', 'description', 'link']
+    columns_to_keep=[col for col in desired_columns if col in df.columns]
 
-columns_to_keep=[col for col in desired_columns if col in df.columns]
-df_clean= df[columns_to_keep].copy()
-if 'pubDate' in df_clean.columns:
-    df_clean['pubDate']=pd.to_datetime(df_clean['pubDate'])
-    df_clean=df_clean.sort_values(by='pubDate', ascending=False)
-df_clean = df_clean.fillna("Not Available")
-if 'title' in df_clean.columns:
-    df_clean['title']=df_clean['title'].str.replace('\n', '').str.strip()
+    df_clean= df[columns_to_keep].copy()
 
-print(f'Loaded and cleaned {len(df_clean)} articles. \n')
-print(df_clean.head())
+    if 'pubDate' in df_clean.columns:
+        df_clean['pubDate']=pd.to_datetime(df_clean['pubDate'])
+        df_clean=df_clean.sort_values(by='pubDate', ascending=False)
+
+    df_clean = df_clean.fillna("Not Available")
+
+    if 'title' in df_clean.columns:
+        df_clean['title']=df_clean['title'].str.replace('\n', '').str.strip()
+    return df_clean
+
+if __name__=="__main__":
+    news_df=get_news()
+    if news_df is not None:
+        print(f"Success! Gathered {len(news_df)} articles.")
