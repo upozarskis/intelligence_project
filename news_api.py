@@ -46,7 +46,3 @@ def get_news():
         df_clean['title']=df_clean['title'].str.replace('\n', '').str.strip()
     return df_clean
 
-if __name__=="__main__":
-    news_df=get_news()
-    if news_df is not None:
-        print(f"Success! Gathered {len(news_df)} articles.")

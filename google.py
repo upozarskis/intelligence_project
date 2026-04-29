@@ -16,7 +16,6 @@ pytrend = TrendReq(
 
 # hl='en-US' is the language, tz=360 is the timezone offset (US CST, standard default), tz=-120 central european time summer
 
-kw_list=['Cybersecurity', 'Technology', 'Geopolitics', 'World News', 'Artificial intelligence']
 
 def get_global_trends(keywords):
 
@@ -38,14 +37,7 @@ def get_global_trends(keywords):
         print('Note: If this says "429" then Google has blocked your IP for rate limiting')
         return None
     
-if __name__ == "__main__":
-    df=get_global_trends(kw_list)
 
-    if df is not None:
-        print("\nSuccess")
-        print(df.tail())
-        df.to_csv("global_trends.csv")
-        print("\nData saved to global_trends.csv")
 
 
 
