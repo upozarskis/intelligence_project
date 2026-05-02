@@ -19,15 +19,19 @@ params={
 def get_news():
     print("Gathering data...")
     response = requests.get(url, params=params)
-    data = response.json()
+    try:
+        data = response.json()
+    except Exception as e:
+        print("Failed to parse JSON:", e)
+        return pd.DataFrame()
 
     #TRANSFORMING INCOMING STRUCTURE
 
     articles= data.get("results", [])
-
-    if not articles:
-        print("No articles found, check API")
-        return None
+    print("DEBUG: type(articles) =", type(articles), "value", repr(articles))
+    if not isinstance(articles, list) or len(articles) == 0:
+        print("No articles found or results are not a list. Returning empty dataframe")
+        return pd.DataFrame()
     
     df=pd.DataFrame(articles)
     print(df.columns)
@@ -37,7 +41,7 @@ def get_news():
     df_clean= df[columns_to_keep].copy()
 
     if 'pubDate' in df_clean.columns:
-        df_clean['pubDate']=pd.to_datetime(df_clean['pubDate'])
+        df_clean['pubDate']=pd.to_datetime(df_clean['pubDate'], errors="coerce")
         df_clean=df_clean.sort_values(by='pubDate', ascending=False)
 
     df_clean = df_clean.fillna("Not Available")
