@@ -115,7 +115,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm =Depends()):
 
 #DATA ENDPOINTS
 @app.get("/news")
-def get_news():
+def get_news(current_user: str = Depends(get_current_user)):
     try:
         with engine.connect() as conn:
             query=text('SELECT * FROM global_news ORDER BY "pubDate"DESC LIMIT 20')
@@ -126,7 +126,7 @@ def get_news():
         return {"error": str(e)}
 
 @app.get("/trends")
-def get_trends():
+def get_trends(current_user: str = Depends(get_current_user)):
     try:
         with engine.connect() as conn:
             query=text("SELECT * FROM google_trends ORDER BY date DESC LIMIT 10")
