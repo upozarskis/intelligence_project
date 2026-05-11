@@ -7,7 +7,7 @@ from news_api import get_news
 
 load_dotenv()
 
-kw_list=['Cybersecurity', 'Technology', 'Geopolitics', 'World News Europe', 'Artificial intelligence']
+kw_list=['Cybersecurity', 'Technology', 'Geopolitics', 'Europe News', 'Artificial intelligence']
 
 def get_db_engine():
     db_user=os.getenv("DB_USER")

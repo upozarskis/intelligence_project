@@ -9,10 +9,19 @@ from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from sqlalchemy import create_engine, text
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 app=FastAPI(title="Intel API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # This allows any website to talk to your API for now
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 DB_URL=f"postgresql://{os.getenv("DB_USER")}:{os.getenv("DB_PW")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}"
 engine=create_engine(DB_URL)
@@ -118,7 +127,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm =Depends()):
 def get_news(current_user: str = Depends(get_current_user)):
     try:
         with engine.connect() as conn:
-            query=text('SELECT * FROM global_news ORDER BY "pubDate"DESC LIMIT 20')
+            query=text('SELECT * FROM global_news ORDER BY "pubDate" DESC')
             df=pd.read_sql(query, conn)
         
         return df.to_dict(orient="records")
@@ -129,7 +138,7 @@ def get_news(current_user: str = Depends(get_current_user)):
 def get_trends(current_user: str = Depends(get_current_user)):
     try:
         with engine.connect() as conn:
-            query=text("SELECT * FROM google_trends ORDER BY date DESC LIMIT 10")
+            query=text("SELECT * FROM google_trends ORDER BY date ASC")
             df=pd.read_sql(query, conn)
         return df.to_dict(orient="records")
     except Exception as e:
