@@ -140,6 +140,8 @@ def get_trends(current_user: str = Depends(get_current_user)):
         with engine.connect() as conn:
             query=text("SELECT * FROM google_trends ORDER BY date ASC")
             df=pd.read_sql(query, conn)
+            # Convert the date column to a string with just YYYY-MM-DD
+            df['date'] = df['date'].dt.strftime('%Y-%m-%d')
         return df.to_dict(orient="records")
     except Exception as e:
         return{"error": str(e)}

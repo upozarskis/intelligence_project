@@ -51,17 +51,27 @@ nav {
 }
 
 #content-area {
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-direction: column; /* Stacks them vertically */
+    gap: 30px;              /* Space between charts */
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;      /* Optional: prevents it from getting TOO wide on giant monitors */
+    margin: 0 auto;         /* Centers the whole list */
 }
 
 .card {
+    width: 100%;            /* Forces the card to take the full width of content-area */
     background: #1e293b;
-    padding: 1.5rem;
+    padding: 20px;
     border-radius: 12px;
-    border: 1px solid #334155;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+/* Ensure the canvas has a set height so it doesn't look squashed */
+.chart-container {
+    position: relative;
+    height: 400px;         /* This gives the chart a nice readable height */
+    width: 100%;
 }
 
 .card h3 { margin-top: 0; color: #60a5fa; }

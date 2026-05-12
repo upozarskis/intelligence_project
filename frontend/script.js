@@ -66,20 +66,57 @@ async function fetchTrends() {
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    const trendsData = await response.json();
+    const trendsData = await response.json(); // This is now an array of many rows
     const content = document.getElementById('content-area');
-    
-    // We take the latest row (the most recent date)
-    const latestRow = trendsData[0]; 
+    content.innerHTML = ""; // Clear the "Welcome" or previous cards
 
-    // We get all the keys (column names) except for 'date'
-    const trendNames = Object.keys(latestRow).filter(key => key !== 'date');
+    // 1. Get the list of dates for the bottom of the chart
+    const labels = trendsData.map(row => row.date);
 
-    content.innerHTML = trendNames.map(name => `
-        <div class="card" style="border-left: 5px solid #10b981;">
-            <h3>🔥 ${name}</h3>
-            <p>Trending Index: ${latestRow[name]}</p>
-            <small>Data for: ${latestRow.date}</small>
-        </div>
-    `).join('');
+    // 2. Identify the trend names from the first row
+    const trendNames = Object.keys(trendsData[0]).filter(key => key !== 'date');
+
+    // 3. Loop through each trend and create a Chart
+    trendNames.forEach(name => {
+        // Create a card for each trend
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <h3>📈 Trend Analysis: ${name}</h3>
+            <div class="chart-container">
+                <canvas id="chart-${name}"></canvas>
+            </div>
+        `;
+        content.appendChild(card);
+
+        // Extract the specific values for this trend across all dates
+        const values = trendsData.map(row => row[name]);
+
+        // Initialize the Chart.js graph
+        const ctx = document.getElementById(`chart-${name}`).getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: name,
+                    data: values,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0 // Keep it clean for 1 year of data
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // REQUIRED for the 400px height to work
+                scales: {
+                    x: { ticks: { color: '#94a3b8', autoSkip: true, maxTicksLimit: 12 } },
+                    y: { beginAtZero: true, ticks: { color: '#94a3b8' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    });
 }
