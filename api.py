@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Header, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from jose import JWTError, jwt 
@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from fastapi.middleware.cors import CORSMiddleware
+from main import run_pipeline
 
 load_dotenv()
 
@@ -23,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_URL=f"postgresql://{os.getenv("DB_USER")}:{os.getenv("DB_PW")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}"
+DB_URL=os.getenv("DB_URL")
 engine=create_engine(DB_URL)
 
 #user table
@@ -145,3 +146,24 @@ def get_trends(current_user: str = Depends(get_current_user)):
         return df.to_dict(orient="records")
     except Exception as e:
         return{"error": str(e)}
+    
+@app.post("/tasks/scrape", status_code=status.HTTP_202_ACCEPTED)
+def trigger_daily_scrape(background_tasks: BackgroundTasks, x_task_token: str = Header(None)):
+    """
+    Hidden endpoint triggered by the system cron job to offload 
+    the scraping pipeline to a background thread.
+    """
+    # Security Check: Ensure the request matches our secret key
+    if x_task_token != SECRET_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Unauthorized task execution."
+        )
+    
+    # Schedule your main pipeline to run safely in the background
+    background_tasks.add_task(run_pipeline)
+    
+    return {
+        "status": "accepted", 
+        "message": "Scraper pipeline successfully triggered in the background."
+    }

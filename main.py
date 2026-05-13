@@ -10,13 +10,8 @@ load_dotenv()
 kw_list=['Cybersecurity', 'Technology', 'Geopolitics', 'Europe News', 'Artificial intelligence']
 
 def get_db_engine():
-    db_user=os.getenv("DB_USER")
-    db_pw=os.getenv("DB_PW")
-    db_host=os.getenv("DB_HOST")
-    db_port=os.getenv("DB_PORT")
-    db_name=os.getenv("DB_NAME")
-
-    connection_string=f"postgresql://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}"
+    
+    connection_string=os.getenv("DB_URL")
     return create_engine(connection_string)
 
 def upload_to_database(trends_df, news_df):

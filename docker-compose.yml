@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PW}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # We don't strictly need ports: "5432:5432" in the cloud unless 
+    # you want to connect via pgAdmin from your home PC.
+
+  api:
+    build: .
+    restart: always
+    environment:
+      DB_URL: ${DB_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+      NEWS_API_URL: ${NEWS_API_URL}   # Explicitly add this
+      NEWS_API_KEY: ${NEWS_API_KEY}   # Explicitly add this
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
