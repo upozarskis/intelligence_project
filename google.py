@@ -2,12 +2,12 @@ import pandas as pd
 import time
 from pytrends.request import TrendReq
 
-# 1. Create a fake "User-Agent" to look like a real browser
+# Created a fake "User-Agent" to look like a real browser
 custom_headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# 2. Pass the headers into pytrends
+#Pass the headers into pytrends
 pytrend = TrendReq(
     hl='en-US', 
     tz=-120, 

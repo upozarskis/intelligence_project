@@ -70,7 +70,7 @@ nav {
 /* Ensure the canvas has a set height so it doesn't look squashed */
 .chart-container {
     position: relative;
-    height: 400px;         /* This gives the chart a nice readable height */
+    height: 400px;         /* This gives the chart a readable height */
     width: 100%;
 }
 

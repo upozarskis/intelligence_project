@@ -14,6 +14,7 @@ def get_db_engine():
     connection_string=os.getenv("DB_URL")
     return create_engine(connection_string)
 
+#Indexes used to choose whether to use pandas native indexing as a separate column.
 def upload_to_database(trends_df, news_df):
     try:
         engine=get_db_engine()

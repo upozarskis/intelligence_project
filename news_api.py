@@ -26,6 +26,7 @@ def get_news():
         return pd.DataFrame()
 
     #TRANSFORMING INCOMING STRUCTURE
+    #if retrieved data is not a list or no articles returned then statement printed
 
     articles= data.get("results", [])
     print("DEBUG: type(articles) =", type(articles), "value", repr(articles))
@@ -38,6 +39,7 @@ def get_news():
     desired_columns=['title', 'pubDate', 'country', 'category', 'description', 'link']
     columns_to_keep=[col for col in desired_columns if col in df.columns]
 
+# Copy function used to avoid pandas taking shortcuts and reusing data in ram as this can cause odd behaviour.Coerce used to avoid crashing incase no date in data
     df_clean= df[columns_to_keep].copy()
 
     if 'pubDate' in df_clean.columns:

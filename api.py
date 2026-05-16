@@ -18,7 +18,7 @@ app=FastAPI(title="Intel API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # This allows any website to talk to your API for now
+    allow_origins=["*"],  # This allows any website to talk to this API for now
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -85,6 +85,7 @@ def get_current_user(token: str=Depends(oauth2_scheme)):
             raise credentials_exception
     return username
 
+# triple quotes used to make comments that are visible in the /docs page for endpoints
 
 @app.get("/")
 def home():
@@ -153,14 +154,14 @@ def trigger_daily_scrape(background_tasks: BackgroundTasks, x_task_token: str = 
     Hidden endpoint triggered by the system cron job to offload 
     the scraping pipeline to a background thread.
     """
-    # Security Check: Ensure the request matches our secret key
+    # Security Check: Ensure the request matches secret key
     if x_task_token != SECRET_KEY:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Unauthorized task execution."
         )
     
-    # Schedule your main pipeline to run safely in the background
+    # Schedule main pipeline to run safely in the background
     background_tasks.add_task(run_pipeline)
     
     return {
