@@ -1,4 +1,5 @@
 Global Intelligence Data Pipeline
+
 A full-stack, containerized data pipeline that automatically aggregates global news and search trends. The backend is built with FastAPI, handling everything from data ingestion and cleaning with Pandas to user registration and secure token authentication, all backed by a PostgreSQL database.
 
 Note: This project is currently in the pre-deployment phase and runs entirely in a local containerized environment via Docker Compose.
