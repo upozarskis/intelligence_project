@@ -19,7 +19,7 @@ def upload_to_database(trends_df, news_df):
     try:
         engine=get_db_engine()
         if trends_df is not None:
-            trends_df.to_sql('google_trends',engine, if_exists='append', index= True)
+            trends_df.to_sql('google_trends',engine, if_exists='replace', index= True)
             print("Google trends data saved to Postgres")
         else:
             print("Skipped saving Google trends - no data gathered")
