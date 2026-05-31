@@ -16,8 +16,8 @@ This system extracts real-time search trends and global news, transforms the dat
 ## Dashboard Preview
 
 <img width="522" height="402" alt="login" src="https://github.com/user-attachments/assets/838dd45e-ab0a-4130-ba03-ab05cd597a45" />
-<img width="522" height="402" alt="latest_news" src="https://github.com/user-attachments/assets/dfeb2106-4a91-4765-b984-362e86e39a63" />
-<img width="522" height="402" alt="google_trends" src="https://github.com/user-attachments/assets/f869b29d-4c2b-479f-b2b9-636040653bfb" />
+<img width="1200" height="450" alt="latest_news" src="https://github.com/user-attachments/assets/dfeb2106-4a91-4765-b984-362e86e39a63" />
+<img width="1200" height="450" alt="google_trends" src="https://github.com/user-attachments/assets/f869b29d-4c2b-479f-b2b9-636040653bfb" />
 
 ---
 
