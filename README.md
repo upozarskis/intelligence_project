@@ -1,49 +1,65 @@
-Global Intelligence Data Pipeline
+# Global Intelligence Data Pipeline
 
-A full-stack, containerized data pipeline that automatically aggregates global news and search trends. The backend is built with FastAPI, handling everything from data ingestion and cleaning with Pandas to user registration and secure token authentication, all backed by a PostgreSQL database.
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS_EC2-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![AWS_RDS](https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazon-rds&logoColor=white)
 
-Note: This project is currently in the pre-deployment phase and runs entirely in a local containerized environment via Docker Compose.
+A full-stack, containerized data engineering pipeline that autonomously aggregates, processes, and serves global technology and cybersecurity intelligence. 
 
-Features
-Automated Data Ingestion:
+This system extracts real-time search trends and global news, transforms the data using Pandas, and loads it into a secure AWS RDS database. The backend is powered by a FastAPI REST application featuring secure JWT authentication and background task orchestration, fully deployed on an AWS EC2 instance.
 
-Google Trends Tracker: Uses pytrends to fetch search interest metrics over the past 12 months for custom keywords. It uses custom browser headers to handle data extraction reliably.
+---
 
-Global News Aggregator: Connects to a live News API, extracting specific categories (technology, world, crime) while handling edge cases like duplicate removal and timezone cleaning.
+## Dashboard Preview
 
-Secure API & User Authentication:
-
-Features a built-in user system that allows new accounts to register with secure, hashed passwords (bcrypt).
-
-Uses JSON Web Tokens (JWT) for secure logins. This means endpoints like /news and /trends are locked down and can only be viewed by authenticated users holding a valid security token.
-
-Background Task Engine:
-
-Uses FastAPI’s native background tasks to run the scraping pipeline. When a system task triggers a crawl, the API immediately responds with an Accepted status so the system doesn't freeze or time out while processing data.
-
-Containerized Environment:
-
-Runs inside a multi-container Docker setup. The Python API application and the PostgreSQL database run as separate, isolated services that securely communicate inside their own private network layer.
-
-Tech Stack
-Backend & API Layer: Python, FastAPI, Uvicorn
-
-Data Processing & Analytics: Pandas, SQLAlchemy (PostgreSQL engine wrapper)
-
-Security & Auth: JWT tokens (python-jose), Passlib (bcrypt password hashing)
-
-Database & Infrastructure: PostgreSQL, Docker, Docker Compose
-
-Project Structure
-google.py & news_api.py - Custom scripts responsible for fetching, cleaning, and formatting data from external sources.
-
-main.py - The central orchestrator that triggers both scripts and updates the database tables using Pandas.
-
-api.py - The FastAPI server handling user accounts, JWT authentication, data delivery routes, and automated backend execution endpoints.
-
-Dockerfile & docker-compose.yml - Infrastructure specifications that configure the virtual application and database containers.
-
-FRONTEND screenshots
 <img width="522" height="402" alt="login" src="https://github.com/user-attachments/assets/838dd45e-ab0a-4130-ba03-ab05cd597a45" />
-<img width="1862" height="397" alt="latest_news" src="https://github.com/user-attachments/assets/dfeb2106-4a91-4765-b984-362e86e39a63" />
-<img width="1897" height="562" alt="google_trends" src="https://github.com/user-attachments/assets/f869b29d-4c2b-479f-b2b9-636040653bfb" />
+<img width="522" height="402" alt="latest_news" src="https://github.com/user-attachments/assets/dfeb2106-4a91-4765-b984-362e86e39a63" />
+<img width="522" height="402" alt="google_trends" src="https://github.com/user-attachments/assets/f869b29d-4c2b-479f-b2b9-636040653bfb" />
+
+---
+
+## Key Architecture & Features
+
+### 1. Automated ETL Pipeline (Extract, Transform, Load)
+* **Search Trends Tracker:** Utilizes `pytrends` with custom browser headers to extract 12-month rolling search interest metrics for strategic geopolitical and tech keywords.
+* **Global News Aggregator:** Connects to live News APIs, extracting targeted categories (Technology, Cybersecurity, World).
+* **Data Transformation:** Leverages **Pandas** to clean data, handle timezones, drop duplicates, and structure schemas before injecting them into the database using SQLAlchemy.
+* **Autonomous Execution:** Orchestrated via a Linux `cron` job that silently wakes the pipeline at 2:00 AM server time daily to fetch and archive new data without manual intervention.
+
+### 2. Secure RESTful API
+* **JWT Authentication:** Endpoints like `/news` and `/trends` are strictly protected. Users must register and authenticate to receive a JSON Web Token (JWT) for access.
+* **Cryptographic Hashing:** User passwords are encrypted using `bcrypt` (Passlib) before touching the database.
+* **Asynchronous Processing:** Utilizes FastAPI’s native background tasks. When a system task triggers a massive data crawl, the API immediately returns an HTTP 202 `Accepted` status, ensuring the client never times out while the server processes data.
+
+### 3. Cloud DevOps & Containerization
+* **Decoupled Architecture:** The Python API application is fully containerized, isolating the compute layer while securely communicating with a managed AWS RDS database instance over an encrypted cloud network.
+* **Production Deployment:** Hosted on **AWS EC2**, utilizing Nginx as a reverse proxy to route public internet traffic securely to the internal Docker containers.
+
+---
+
+## Tech Stack
+
+| Category | Technologies Used |
+| :--- | :--- |
+| **Backend API** | Python, FastAPI, Uvicorn |
+| **Data Engineering** | Pandas, Pytrends, SQLAlchemy |
+| **Database** | PostgreSQL, AWS RDS | 
+| **Security** | JWT (python-jose), Passlib (bcrypt) |
+| **DevOps & Cloud** | Docker, Docker Compose, Linux (Ubuntu), AWS EC2, AWS RDS, Cron, Nginx |
+
+---
+
+## Project Structure
+
+```text
+├── main.py                 # Core orchestrator; triggers ETL jobs & updates DB via Pandas
+├── api.py                  # FastAPI server: Handles routing, JWT auth, and background tasks
+├── google.py               # Custom extraction script for Google Trends data
+├── news_api.py             # Custom extraction and cleaning script for global news
+├── docker-compose.yml      # Infrastructure config for API and Database network isolation
+├── Dockerfile              # Container blueprint for the Python environment
+└── requirements.txt        # Python package dependencies
+```
