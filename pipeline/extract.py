@@ -80,7 +80,7 @@ def extract_news_api(query):
         print(f" Success! Raw News API payload written to 'bronze_raw_news_api'.")
             
     except Exception as e:
-        print(f"🔴 Error extracting News API data: {e}")
+        print(f" Error extracting News API data: {e}")
     
 
 if __name__ == "__main__":
