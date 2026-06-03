@@ -77,7 +77,7 @@ def extract_news_api(query):
                 df[col] = df[col].astype(str)
         # Dumps 100% of the raw data payload directly into Postgres
         df.to_sql('bronze_news_api', engine, if_exists='append', index=False)
-        print(f" Success! Raw News API payload written to 'bronze_raw_news_api'.")
+        print(f" Raw News API payload written to 'bronze_raw_news_api'.")
             
     except Exception as e:
         print(f" Error extracting News API data: {e}")
