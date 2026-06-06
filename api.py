@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from fastapi.middleware.cors import CORSMiddleware
-from main import run_pipeline
+from main import run_master_orchestrator
 
 load_dotenv()
 
@@ -124,30 +124,69 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm =Depends()):
     access_token = create_access_token(data={"sub": user_row[0]})
     return {"access_token": access_token, "token_type": "bearer"}
 
+# --- GOLD DATA ENDPOINT ---
+@app.get("/analytics/daily-insights")
+def get_daily_insights(current_user: str = Depends(get_current_user)):
+    """
+    Returns the fully aggregated Multi-Topic Gold Matrix. 
+    Ready for instant UI charting.
+    """
+    try:
+        with engine.connect() as conn:
+            # Query the pre-calculated Gold table
+            query = text("SELECT * FROM gold_daily_insights ORDER BY date ASC")
+            df = pd.read_sql(query, conn)
+            
+            # Format date for JSON friendliness
+            if not df.empty:
+                df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
+                
+                # Defensive Engineering:  THE FIX: Catch NaN, Infinity, and Negative Infinity
+                # Replace them with standard Python 'None' (which becomes standard JSON 'null')
+                df = df.replace({
+                    float('nan'): None, 
+                    float('inf'): None, 
+                    float('-inf'): None
+                })
+            
+        return df.to_dict(orient="records")
+    except Exception as e:
+        return {"error": str(e)}
 #DATA ENDPOINTS
 @app.get("/news")
 def get_news(current_user: str = Depends(get_current_user)):
+    """Returns the latest individual news articles for the personal feed."""
     try:
         with engine.connect() as conn:
-            query=text('SELECT * FROM global_news ORDER BY "pubDate" DESC')
-            df=pd.read_sql(query, conn)
-        
+            # Pulling from your cleaned Silver layer, newest articles first
+            query = text('SELECT * FROM silver_news_api ORDER BY "pubDate" DESC LIMIT 100')
+            df = pd.read_sql(query, conn)
+            
+            # Defensive check for NaN/empty values
+            df = df.where(pd.notnull(df), None)
+            
         return df.to_dict(orient="records")
     except Exception as e:
         return {"error": str(e)}
 
 @app.get("/trends")
 def get_trends(current_user: str = Depends(get_current_user)):
+    """Returns the raw Google Trends timeline for the 5 keywords."""
     try:
         with engine.connect() as conn:
-            query=text("SELECT * FROM google_trends ORDER BY date ASC")
-            df=pd.read_sql(query, conn)
-            # Convert the date column to a string with just YYYY-MM-DD
-            df['date'] = df['date'].dt.strftime('%Y-%m-%d')
+            # Pulling from the Silver layer
+            query = text("SELECT * FROM silver_google ORDER BY date ASC")
+            df = pd.read_sql(query, conn)
+            
+            if not df.empty:
+                df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
+                df = df.where(pd.notnull(df), None)
+                
         return df.to_dict(orient="records")
     except Exception as e:
-        return{"error": str(e)}
-    
+        return {"error": str(e)}
+
+# automation endpoint
 @app.post("/tasks/scrape", status_code=status.HTTP_202_ACCEPTED)
 def trigger_daily_scrape(background_tasks: BackgroundTasks, x_task_token: str = Header(None)):
     """

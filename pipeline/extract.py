@@ -82,13 +82,26 @@ def extract_news_api(query):
     except Exception as e:
         print(f" Error extracting News API data: {e}")
     
-
-if __name__ == "__main__":
-    # Local Pipeline Test
-    test_keywords = ["cybersecurity", "Latvia"]
+def run_extraction():
+    """Master extraction trigger: handles multi-keyword tracking professionally"""
     
-    # 1. Run Google Ingestion
-    extract_google_trends(test_keywords)
+    #  Full keyword tracking list
+    production_keywords = [
+        'Cybersecurity', 
+        'Technology', 
+        'Geopolitics', 
+        'Latvia', 
+        'Artificial intelligence'
+    ]
     
-    # 2. Run News Ingestion (Using your primary keyword)
-    extract_news_api(test_keywords[0])
+    print(f" [Bronze] Starting full-scale extraction for {len(production_keywords)} targets.")
+    
+    # 1. Google Trends handles the full list natively in a single API call
+    extract_google_trends(production_keywords)
+    
+    # 2. News API requires an iterative loop to avoid the Boolean AND trap
+    print("\n--- Starting Iterative News API Ingestion Loop ---")
+    for keyword in production_keywords:
+        extract_news_api(keyword)
+        
+    print("\n [Bronze] Full-scale ingestion complete for all keywords.")
