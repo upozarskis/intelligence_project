@@ -201,9 +201,9 @@ def trigger_daily_scrape(background_tasks: BackgroundTasks, x_task_token: str = 
         )
     
     # Schedule main pipeline to run safely in the background
-    background_tasks.add_task(run_pipeline)
+    background_tasks.add_task(run_master_orchestrator)
     
     return {
         "status": "accepted", 
-        "message": "Scraper pipeline successfully triggered in the background."
+        "message": "Full Medallion Pipeline triggered in the background."
     }
