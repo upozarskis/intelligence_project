@@ -1,52 +1,74 @@
-import pandas as pd
 import os
+import time
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from google import get_global_trends
-from news_api import get_news
 
+#  IMPORT PIPELINE COGS
+# Because the 'pipeline' directory is at the root, Python allows clean package imports.
+# We import the exact entry-point functions we built for each Medallion tier.
+try:
+    from pipeline.extract import run_extraction
+except ImportError:
+    # Safe fallback if your extract script uses a different function name
+    from pipeline.extract import main as run_extraction
+
+from pipeline.transform import transform_google_trends, transform_news_data
+from pipeline.gold import create_gold_analytics
+
+# Load environmental configs
 load_dotenv()
 
-kw_list=['Cybersecurity', 'Technology', 'Geopolitics', 'Latvia', 'Artificial intelligence']
+def run_master_orchestrator():
+    """Manages the end-to-end execution of the Medallion Data Pipeline"""
+    print(" [Orchestrator] Initiating Automated Pipeline Execution...")
+    start_total_time = time.time()
 
-def get_db_engine():
-    
-    connection_string=os.getenv("DB_URL")
-    return create_engine(connection_string)
-
-#Indexes used to choose whether to use pandas native indexing as a separate column.
-def upload_to_database(trends_df, news_df):
+    # ──────────────────────────────────────────────────────────
+    #  PHASE 1: BRONZE LAYER (RAW INGESTION)
+    # ──────────────────────────────────────────────────────────
+    print("\n======  PHASE 1: BRONZE LAYER (EXTRACTION) ======")
+    start_bronze = time.time()
     try:
-        engine=get_db_engine()
-        if trends_df is not None:
-            trends_df.to_sql('google_trends',engine, if_exists='replace', index= True)
-            print("Google trends data saved to Postgres")
-        else:
-            print("Skipped saving Google trends - no data gathered")
-        if news_df is not None:
-            news_df.to_sql('global_news', engine, if_exists='append', index=False)
-            print("News API data saved to Postgres")
-        else:
-            print("Skipped saving News - no data gathered")
+        run_extraction()
+        print(f" Bronze Layer processing completed in {time.time() - start_bronze:.2f}s")
     except Exception as e:
-        print(f"Database Error: {e}")
+        print(f" CRITICAL ERROR in Bronze Stage: {e}")
+        print(" Pipeline aborted to prevent downstream corruption.")
+        return
 
-def run_pipeline():
-    print("Starting pipeline...\n")
+    # ──────────────────────────────────────────────────────────
+    #  PHASE 2: SILVER LAYER (CLEANING & STANDARDIZATION)
+    # ──────────────────────────────────────────────────────────
+    print("\n======  PHASE 2: SILVER LAYER (TRANSFORMATION) ======")
+    start_silver = time.time()
+    try:
+        transform_google_trends()
+        print("---")
+        transform_news_data()
+        print(f" Silver Layer processing completed in {time.time() - start_silver:.2f}s")
+    except Exception as e:
+        print(f" CRITICAL ERROR in Silver Stage: {e}")
+        print(" Pipeline aborted. Unable to parse clean data for Gold metrics.")
+        return
 
-    print("--- Gathering Google trends---")
-    trends_df=get_global_trends(kw_list)
+    # ──────────────────────────────────────────────────────────
+    #  PHASE 3: GOLD LAYER (BUSINESS INTELLIGENCE & KPIS)
+    # ──────────────────────────────────────────────────────────
+    print("\n======  PHASE 3: GOLD LAYER (AGGREGATION) ======")
+    start_gold = time.time()
+    try:
+        create_gold_analytics()
+        print(f" Gold Layer processing completed in {time.time() - start_gold:.2f}s")
+    except Exception as e:
+        print(f" CRITICAL ERROR in Gold Stage: {e}")
+        return
 
-    print("\n---Gathering Global news---")
-    news_df=get_news()
+    # ──────────────────────────────────────────────────────────
+    #  PIPELINE SUCCESS REPORT
+    # ──────────────────────────────────────────────────────────
+    total_duration = time.time() - start_total_time
+    print("\n=======================================================")
+    print(f" SUCCESS: Full Medallion Pipeline executed in {total_duration:.2f}s!")
+    print("=======================================================")
 
-    print("\n")
-    if trends_df is not None or news_df is not None:
-        upload_to_database(trends_df, news_df)
-    else:
-        print("Pipeline finished, no  data gathered due to all sources failing.")
-
-if __name__=="__main__":
-    run_pipeline()
-
-
+if __name__ == "__main__":
+    run_master_orchestrator()

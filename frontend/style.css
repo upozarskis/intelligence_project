@@ -77,3 +77,42 @@ nav {
 .card h3 { margin-top: 0; color: #60a5fa; }
 
 .error { color: #f87171; font-size: 0.9rem; }
+
+/* Append these styles to the bottom of your style.css file */
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.momentum-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.positive-badge {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid #10b981;
+}
+
+.negative-badge {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid #ef4444;
+}
+
+nav button {
+    transition: background 0.2s ease-in-out;
+}
+
+nav button:focus {
+    background: #1d4ed8;
+    outline: none;
+}
