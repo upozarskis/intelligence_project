@@ -4,7 +4,6 @@ services:
     container_name: local_postgres_warehouse
     restart: always
     environment:
-      # Docker will automatically grab these from local .env file
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PW}
       POSTGRES_DB: ${DB_NAME}
@@ -15,6 +14,7 @@ services:
 
   api:
     build: .
+    container_name: intel_api_backend
     restart: always
     ports:
       - "8000:8000"

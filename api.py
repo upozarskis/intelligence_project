@@ -194,7 +194,7 @@ def trigger_daily_scrape(background_tasks: BackgroundTasks, x_task_token: str = 
     the scraping pipeline to a background thread.
     """
     # Security Check: Ensure the request matches secret key
-    if x_task_token != SECRET_KEY:
+    if x_task_token != SECRET_KEY.strip():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Unauthorized task execution."
