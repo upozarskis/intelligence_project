@@ -74,7 +74,7 @@ async function fetchTrends() {
     const labels = trendsData.map(row => row.date);
 
     // 2. Identify the trend names from the first row
-    const trendNames = Object.keys(trendsData[0]).filter(key => key !== 'date');
+    const trendNames = Object.keys(trendsData[0]).filter(key => key !== 'date' && key !== 'extracted_at' && key !== 'id');
 
     // 3. Loop through each trend and create a Chart
     trendNames.forEach(name => {
