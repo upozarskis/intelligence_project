@@ -53,8 +53,8 @@ The system processes data through three distinct quality tiers to ensure reliabi
 ├── main.py                 # Pipeline Orchestrator (Triggers the ETL workflow)
 ├── api.py                  # FastAPI server: Handles Auth & Data Serving
 ├── pipeline/               # Core Data Engineering Logic
-│   ├── bronze.py           # EXTRACTION: Fetches raw data from Trends & News APIs
-│   ├── silver.py           # TRANSFORMATION: Cleans, deduplicates, and standardizes
+│   ├── extract.py           # EXTRACTION: Fetches raw data from Trends & News APIs
+│   ├── transform.py           # TRANSFORMATION: Cleans, deduplicates, and standardizes
 │   └── gold.py             # AGGREGATION: Generates business insights & matrices
 ├── docker-compose.yml      # Infrastructure & network isolation
 ├── Dockerfile              # Container environment configuration
