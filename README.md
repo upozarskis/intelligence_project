@@ -1,4 +1,4 @@
-# Global Intelligence Data Pipeline
+# Intelligence Data Pipeline
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)
@@ -7,7 +7,7 @@
 ![AWS](https://img.shields.io/badge/AWS_EC2-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![AWS_RDS](https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazon-rds&logoColor=white)
 
-A full-stack, containerized data engineering pipeline that autonomously aggregates, processes, and serves global technology and cybersecurity intelligence. 
+A full-stack, containerized data engineering pipeline that autonomously aggregates, processes, and serves global technology and cybersecurity intelligence using a **Medallion Architecture (Bronze-Silver-Gold)**.
 
 This system extracts real-time search trends and global news, transforms the data using Pandas, and loads it into a secure AWS RDS database. The backend is powered by a FastAPI REST application featuring secure JWT authentication and background task orchestration, fully deployed on an AWS EC2 instance.
 
@@ -21,22 +21,17 @@ This system extracts real-time search trends and global news, transforms the dat
 
 ---
 
-## Key Architecture & Features
+##  Medallion Architecture
+The system processes data through three distinct quality tiers to ensure reliability and scalability:
+* **Bronze (Raw):** Stores landing-zone data exactly as retrieved from sources (Trends & News API) to maintain a full historical audit trail.
+* **Silver (Standardized):** Cleans, deduplicates, and standardizes schemas across disparate sources, creating a "trusted" dataset.
+* **Gold (Curated):** Aggregates business-ready insights, pre-calculated metrics, and topic-specific matrices optimized for high-performance dashboarding.
 
-### 1. Automated ETL Pipeline (Extract, Transform, Load)
-* **Search Trends Tracker:** Utilizes `pytrends` with custom browser headers to extract 12-month rolling search interest metrics for strategic geopolitical and tech keywords.
-* **Global News Aggregator:** Connects to live News APIs, extracting targeted categories (Technology, Cybersecurity, World).
-* **Data Transformation:** Leverages **Pandas** to clean data, handle timezones, drop duplicates, and structure schemas before injecting them into the database using SQLAlchemy.
-* **Autonomous Execution:** Orchestrated via a Linux `cron` job that silently wakes the pipeline at 2:00 AM server time daily to fetch and archive new data without manual intervention.
-
-### 2. Secure RESTful API
-* **JWT Authentication:** Endpoints like `/news` and `/trends` are strictly protected. Users must register and authenticate to receive a JSON Web Token (JWT) for access.
-* **Cryptographic Hashing:** User passwords are encrypted using `bcrypt` (Passlib) before touching the database.
-* **Asynchronous Processing:** Utilizes FastAPI’s native background tasks. When a system task triggers a massive data crawl, the API immediately returns an HTTP 202 `Accepted` status, ensuring the client never times out while the server processes data.
-
-### 3. Cloud DevOps & Containerization
-* **Decoupled Architecture:** The Python API application is fully containerized, isolating the compute layer while securely communicating with a managed AWS RDS database instance over an encrypted cloud network.
-* **Production Deployment:** Hosted on **AWS EC2**, utilizing Nginx as a reverse proxy to route public internet traffic securely to the internal Docker containers.
+##  Key Features
+* **Automated Pipeline:** Orchestrated via Linux cron, the system executes the full Medallion workflow daily, transforming raw data into business intelligence.
+* **Secure RESTful API:** FastAPI-powered endpoints with JWT authentication and bcrypt password hashing.
+* **Asynchronous Orchestration:** Utilizes FastAPI background tasks for non-blocking data ingestion, ensuring seamless user experience during heavy processing.
+* **Cloud-Native:** Fully containerized with Docker, deployed on AWS EC2, and utilizing AWS RDS (PostgreSQL) for storage.
 
 ---
 
@@ -45,7 +40,7 @@ This system extracts real-time search trends and global news, transforms the dat
 | Category | Technologies Used |
 | :--- | :--- |
 | **Backend API** | Python, FastAPI, Uvicorn |
-| **Data Engineering** | Pandas, Pytrends, SQLAlchemy |
+| **Data Engineering** | Pandas, Pytrends, SQLAlchemy, Medallion Patterns |
 | **Database** | PostgreSQL, AWS RDS | 
 | **Security** | JWT (python-jose), Passlib (bcrypt) |
 | **DevOps & Cloud** | Docker, Docker Compose, Linux (Ubuntu), AWS EC2, AWS RDS, Cron, Nginx |
@@ -55,11 +50,13 @@ This system extracts real-time search trends and global news, transforms the dat
 ## Project Structure
 
 ```text
-├── main.py                 # Core orchestrator; triggers ETL jobs & updates DB via Pandas
-├── api.py                  # FastAPI server: Handles routing, JWT auth, and background tasks
-├── google.py               # Custom extraction script for Google Trends data
-├── news_api.py             # Custom extraction and cleaning script for global news
-├── docker-compose.yml      # Infrastructure config for API and Database network isolation
-├── Dockerfile              # Container blueprint for the Python environment
-└── requirements.txt        # Python package dependencies
+├── main.py                 # Pipeline Orchestrator (Triggers the ETL workflow)
+├── api.py                  # FastAPI server: Handles Auth & Data Serving
+├── pipeline/               # Core Data Engineering Logic
+│   ├── bronze.py           # EXTRACTION: Fetches raw data from Trends & News APIs
+│   ├── silver.py           # TRANSFORMATION: Cleans, deduplicates, and standardizes
+│   └── gold.py             # AGGREGATION: Generates business insights & matrices
+├── docker-compose.yml      # Infrastructure & network isolation
+├── Dockerfile              # Container environment configuration
+└── requirements.txt        # Dependencies
 ```
