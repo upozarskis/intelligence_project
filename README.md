@@ -1,3 +1,4 @@
+<img width="1850" height="707" alt="Gold_Insights" src="https://github.com/user-attachments/assets/67281c92-6b95-4d06-9c7e-6ad8c1ac7ef2" />
 # Intelligence Data Pipeline
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -16,8 +17,9 @@ This system extracts real-time search trends and global news, transforms the dat
 ## Dashboard Preview
 
 <img width="522" height="402" alt="login" src="https://github.com/user-attachments/assets/838dd45e-ab0a-4130-ba03-ab05cd597a45" />
-<img width="1200" height="450" alt="latest_news" src="https://github.com/user-attachments/assets/dfeb2106-4a91-4765-b984-362e86e39a63" />
-<img width="1200" height="450" alt="google_trends" src="https://github.com/user-attachments/assets/f869b29d-4c2b-479f-b2b9-636040653bfb" />
+<img width="1200" height="400" alt="latest_news" src="https://github.com/user-attachments/assets/dfeb2106-4a91-4765-b984-362e86e39a63" />
+<img width="1200" height="400" alt="google_trends" src="https://github.com/user-attachments/assets/f869b29d-4c2b-479f-b2b9-636040653bfb" />
+<img width="1200" height="400" alt="Gold_Insights" src="https://github.com/user-attachments/assets/77dcd36f-91e0-4512-b865-aec5c0d8df3d" />
 
 ---
 
