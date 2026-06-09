@@ -1,4 +1,3 @@
-<img width="1850" height="707" alt="Gold_Insights" src="https://github.com/user-attachments/assets/67281c92-6b95-4d06-9c7e-6ad8c1ac7ef2" />
 # Intelligence Data Pipeline
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
